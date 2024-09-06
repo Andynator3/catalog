@@ -1,0 +1,80 @@
+ <!-- Le Menu -->
+ <div class="container">
+  <nav *ngIf="authService.hasRole('ADMIN')" class="p-2 m-2 border border-info">
+    <button class="btn btn btn-outline-info" (click)="handleNewProduct()">New Product</button>
+  </nav>
+  <!-- L'affiche en rouge de la donnée de errorMessage -->
+    <ng-template #errors>
+      <div class="text-danger">{{errorMessage}}</div>
+    </ng-template>
+    <!-- Si errorMessage contient une donnée, je l'affiche en rouge -->
+    <!-- <div *ngIf="errorMessage" class="text-danger">
+        {{errorMessage}}
+    </div> -->
+    <!-- L'affiche des produits -->
+    <div class="card" *ngIf="products; else errors">
+      <!--On affiche cette carte qui contient les produits si products contient les données -->
+      <!-- <div class="card" *ngIf="products"> -->
+
+      <div class="card-header"> Products List</div>
+
+      <div class="card-body">
+        <!-- {{searchFormGroup.value | json}} -->
+
+        <!-- Formulaire pour faire de la recherche -->
+        <!-- L'ajout de l'attribut formGroup, ce formulaire là représente cet objet searchFormGroup -->
+        <!-- L'ajout de ngSubmit pour la validation du formulaire, en faisant appel à la méthode handleSearchProducts -->
+        <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchProducts()">
+          <!-- Formulaire bootstrap d'une seule ligne -->
+          <div class="input-group">
+            <label for="" class="input-group-text">Keyword :</label>
+            <!-- La liaison du champ de texte avec keyword, la donnée qu'on saisie dans le type text va être stocker dans un attribut keyword de searchFormGroup.-->
+            <!-- avec un data binding de type two way binding -->
+            <input type="text" class="form-control" formControlName="keyword">
+            <button class=" btn btn-info">
+              <i class=" bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+        <!-- Présentation des produits -->
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th> <th>Name</th> <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of products">
+              <td>{{p.id}}</td>
+              <td>{{p.name}}</td>
+              <td>{{p.price}}</td>
+              <td>
+                <i *ngIf="p.promotion==true" class="bi bi-heart-fill text-success"></i>
+              </td>
+              <td *ngIf="authService.hasRole('ADMIN')">
+                <!-- Quand le texte du bouton change -->
+                <button (click)="handleSetPromotion(p)" [ngClass]="p.promotion==true?'btn-danger':'btn-success'" class="btn">
+                  <span *ngIf="p.promotion==true">Promo Off</span>
+                  <span *ngIf="p.promotion==false">Promo On</span>
+                </button>
+              </td>
+              <td *ngIf="authService.hasRole('ADMIN')">
+                <button (click)="handleDeleteProduct(p)" class="btn btn-danger">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Créyons des liens pour la navigation des pages. -->
+        <ul class="nav nav-pills">
+          <!-- Créyons un tableau qui contient la totalité des pages->[].constructor(this.totalPages -->
+          <li *ngFor="let item of [].constructor(this.totalPages); let i=index">
+            <a (click)="gotoPage(i)" [ngClass]="i==currentPage?'btn-info':'btn-outline-info'" class="btn  ms-1 mt-1">{{i}}</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+</div>
+
